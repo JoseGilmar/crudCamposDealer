@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace crudCamposDealer.Models
 {
@@ -7,7 +8,7 @@ namespace crudCamposDealer.Models
     {
         [Key]
         [Column("idVenda")]
-        [Display(Name = "Id do Venda")]
+        [Display(Name = "Id da Venda")]
         public int IdVenda { get; set; }
 
         [Required]
@@ -16,7 +17,7 @@ namespace crudCamposDealer.Models
         public int ClienteId { get; set; }
 
         [ForeignKey("ClienteId")]
-        public required Cliente Cliente { get; set; }
+        public Cliente Cliente { get; set; }
 
         [Required]
         [Column("idProduto")]
@@ -24,7 +25,7 @@ namespace crudCamposDealer.Models
         public int ProdutoId { get; set; }
 
         [ForeignKey("ProdutoId")]
-        public required Produto Produto { get; set; }
+        public Produto Produto { get; set; }
 
         [Required]
         [Column("qtdVenda")]
@@ -41,9 +42,8 @@ namespace crudCamposDealer.Models
         [Display(Name = "Data da Venda")]
         public DateTime DataVenda { get; set; }
 
-        [Required]
-        [Column("vlrTotalVenda")]
+        [NotMapped]
         [Display(Name = "Valor da Venda")]
-        public decimal ValorTotal { get; set; }
+        public decimal ValorTotal => Quantidade * ValorUnitario;
     }
 }

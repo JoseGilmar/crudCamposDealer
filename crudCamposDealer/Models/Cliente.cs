@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace crudCamposDealer.Models
 {
@@ -13,13 +13,11 @@ namespace crudCamposDealer.Models
         [Required]
         [Column("nmCliente")]
         [Display(Name = "Nome")]
-        public required string Nome { get; set; }
+        public string Nome { get; set; }
 
         [Required]
         [Column("Cidade")]
         [Display(Name = "Cidade")]
-        public required string Cidade { get; set; }
-
-        public required ICollection<Venda> Vendas { get; set; }
+        public string Cidade { get; set; }
     }
 }

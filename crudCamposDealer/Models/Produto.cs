@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace crudCamposDealer.Models
 {
@@ -13,13 +13,11 @@ namespace crudCamposDealer.Models
         [Required]
         [Column("dscProduto")]
         [Display(Name = "Descrição")]
-        public required string Descricao { get; set; }
+        public string Descricao { get; set; }
 
         [Required]
         [Column("vlrUnitario")]
         [Display(Name = "Valor Unitário")]
         public decimal ValorUnitario { get; set; }
-
-        public required ICollection<Venda> Vendas { get; set; }
     }
 }

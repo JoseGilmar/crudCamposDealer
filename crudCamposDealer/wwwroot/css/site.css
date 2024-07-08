@@ -1,3 +1,29 @@
+:root {
+    --e-global-color-primary: #3d4290;
+    --e-global-color-secondary: #3d4290;
+    --e-global-color-text: #484545;
+    --e-global-color-accent: #75b636;
+    --e-global-color-e219cab: #edf3ff;
+    --e-global-color-ef40e05: #f7f7f7;
+    --e-global-color-8508866: #fff;
+    --e-global-color-7b6a595: #eff0f6;
+    --e-global-color-a65cf08: #d8d4d4;
+    --e-global-color-e610af6: #14142a;
+    --e-global-color-0b4c422: #4e4b66;
+    --e-global-color-7685a0e: #6e7191;
+    --e-global-color-e96fba3: #75b636;
+    --e-global-color-2c8ea8f: #3d4290;
+    --e-global-typography-primary-font-family: "Poppins";
+    --e-global-typography-primary-font-weight: 700;
+    --e-global-typography-secondary-font-family: "Poppins";
+    --e-global-typography-secondary-font-weight: 500;
+    --e-global-typography-secondary-line-height: 1.1em;
+    --e-global-typography-text-font-family: "Poppins";
+    --e-global-typography-text-font-weight: 300;
+    --e-global-typography-accent-font-family: "Poppins";
+    --e-global-typography-accent-font-weight: 500;
+    --e-global-typography-8ca8f5c-font-family: "Poppins";
+}
 html {
   font-size: 14px;
 }
@@ -19,4 +45,20 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: var(--e-global-color-7b6a595) !important;
+}
+
+.bg-white {
+    background-color: var(--e-global-color-primary) !important;
+}
+
+.navbar-light .navbar-brand {
+    color: var(--e-global-color-7b6a595) !important;
+}
+.footer[b-ji7lzwxwtc] {
+    background-color: var(--e-global-color-primary) !important;
+    color: var(--e-global-color-7b6a595) !important;
 }
