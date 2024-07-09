@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using crudCamposDealer.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using crudCamposDealer.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace crudCamposDealer.Controllers
 {
@@ -18,60 +16,26 @@ namespace crudCamposDealer.Controllers
             _context = context;
         }
 
-        // GET: Vendas
-        public async Task<IActionResult> Index()
-        {
-            var contexto = _context.Venda.Include(v => v.Cliente).Include(v => v.Produto);
-            return View(await contexto.ToListAsync());
-        }
-
-        // GET: Vendas/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var venda = await _context.Venda
-                .Include(v => v.Cliente)
-                .Include(v => v.Produto)
-                .FirstOrDefaultAsync(m => m.IdVenda == id);
-            if (venda == null)
-            {
-                return NotFound();
-            }
-
-            return View(venda);
-        }
-
         // GET: Vendas/Create
         public IActionResult Create()
         {
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "IdCliente", "Cidade");
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "IdProduto", "Descricao");
+            ViewBag.ClienteId = new SelectList(_context.Clientes, "IdCliente", "Nome");
+            ViewBag.ProdutoId = new SelectList(_context.Produtos, "IdProduto", "Descricao");
             return View();
         }
 
         // POST: Vendas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("IdVenda,ClienteId,ProdutoId,Quantidade,ValorUnitario,DataVenda,ValorTotal")] Venda venda)
+        public async Task<IActionResult> Create([Bind("ClienteId,ProdutoId,Quantidade,DataVenda,ValorUnitario,ValorTotal")] Venda venda)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(venda);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "IdCliente", "Cidade", venda.ClienteId);
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "IdProduto", "Descricao", venda.ProdutoId);
-            return View(venda);
+
+            _context.Add(venda);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: Vendas/Edit/5
+        // GET: Vendas/Edit
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -84,50 +48,38 @@ namespace crudCamposDealer.Controllers
             {
                 return NotFound();
             }
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "IdCliente", "Cidade", venda.ClienteId);
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "IdProduto", "Descricao", venda.ProdutoId);
+
+            ViewBag.ClienteId = new SelectList(_context.Clientes, "IdCliente", "Nome", venda.ClienteId);
+            ViewBag.ProdutoId = new SelectList(_context.Produtos, "IdProduto", "Descricao", venda.ProdutoId);
+
             return View(venda);
         }
 
-        // POST: Vendas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Vendas
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("IdVenda,ClienteId,ProdutoId,Quantidade,ValorUnitario,DataVenda,ValorTotal")] Venda venda)
+        public async Task<IActionResult> Edit(int id, [Bind("IdVenda,ClienteId,ProdutoId,Quantidade,DataVenda,ValorUnitario,ValorTotal")] Venda venda)
         {
-            if (id != venda.IdVenda)
+            var existingVenda = await _context.Venda.FindAsync(id);
+            if (existingVenda != null)
+            {
+                existingVenda.ClienteId = venda.ClienteId;
+                existingVenda.ProdutoId = venda.ProdutoId;
+                existingVenda.Quantidade = venda.Quantidade;
+                existingVenda.DataVenda = venda.DataVenda;
+                existingVenda.ValorUnitario = venda.ValorUnitario;
+
+                _context.Update(existingVenda);
+                await _context.SaveChangesAsync();
+            }
+            else
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(venda);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VendaExists(venda.IdVenda))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ClienteId"] = new SelectList(_context.Clientes, "IdCliente", "Cidade", venda.ClienteId);
-            ViewData["ProdutoId"] = new SelectList(_context.Produtos, "IdProduto", "Descricao", venda.ProdutoId);
-            return View(venda);
+            return RedirectToAction(nameof(Index));
         }
-
-        // GET: Vendas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Clientes/Details
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
@@ -135,8 +87,6 @@ namespace crudCamposDealer.Controllers
             }
 
             var venda = await _context.Venda
-                .Include(v => v.Cliente)
-                .Include(v => v.Produto)
                 .FirstOrDefaultAsync(m => m.IdVenda == id);
             if (venda == null)
             {
@@ -146,7 +96,25 @@ namespace crudCamposDealer.Controllers
             return View(venda);
         }
 
-        // POST: Vendas/Delete/5
+        // GET: Vendas/Delete
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var venda = await _context.Venda
+                .FirstOrDefaultAsync(m => m.IdVenda == id);
+            if (venda == null)
+            {
+                return NotFound();
+            }
+
+            return View(venda);
+        }
+
+        // POST: Vendas/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -155,15 +123,34 @@ namespace crudCamposDealer.Controllers
             if (venda != null)
             {
                 _context.Venda.Remove(venda);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool VendaExists(int id)
         {
-            return _context.Venda.Any(e => e.IdVenda == id);
+            return _context.Venda.Any(v => v.IdVenda == id);
+        }
+
+        // GET: Vendas/GetProdutoValorUnitario
+        public async Task<IActionResult> GetProdutoValorUnitario(int id)
+        {
+            var produto = await _context.Produtos.FindAsync(id);
+            if (produto == null)
+            {
+                return NotFound();
+            }
+
+            return Json(new { valorUnitario = produto.ValorUnitario.ToString("N2") });
+        }
+
+        // GET: Vendas
+        public async Task<IActionResult> Index()
+        {
+            var vendas = _context.Venda.Include(v => v.Cliente).Include(v => v.Produto);
+            return View(await vendas.ToListAsync());
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using crudCamposDealer.Models.Config;
+using Microsoft.EntityFrameworkCore;
 
 namespace crudCamposDealer.Models
 {
@@ -9,5 +10,11 @@ namespace crudCamposDealer.Models
         public DbSet<Produto> Produtos { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Venda> Venda { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new ProdutoConfig());
+            modelBuilder.ApplyConfiguration(new VendaConfig());
+        }
     }
 }

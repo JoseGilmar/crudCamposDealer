@@ -29,6 +29,7 @@ namespace crudCamposDealer.Models
 
         [Required]
         [Column("qtdVenda")]
+        [Range(1, int.MaxValue, ErrorMessage = "A quantidade deve ser maior que zero.")]
         [Display(Name = "Quantidade do Produto")]
         public int Quantidade { get; set; }
 

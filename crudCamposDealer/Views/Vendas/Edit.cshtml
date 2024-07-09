@@ -1,26 +1,29 @@
 ﻿@model crudCamposDealer.Models.Venda
-
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h2>Edit</h2>
 
 <h4>Venda</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div class="col-md-12">
+        <form asp-action="Edit" asp-controller="Vendas" method="post">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="IdVenda" />
             <div class="form-group">
                 <label asp-for="ClienteId" class="control-label"></label>
-                <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId"></select>
+                <select asp-for="ClienteId" class="form-control" asp-items="ViewBag.ClienteId">
+                    <option value="">Selecione um Cliente</option>
+                </select>
                 <span asp-validation-for="ClienteId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ProdutoId" class="control-label"></label>
-                <select asp-for="ProdutoId" class="form-control" asp-items="ViewBag.ProdutoId"></select>
+                <select asp-for="ProdutoId" class="form-control" asp-items="ViewBag.ProdutoId">
+                    <option value="">Selecione um Produto</option>
+                </select>
                 <span asp-validation-for="ProdutoId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -29,18 +32,18 @@
                 <span asp-validation-for="Quantidade" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ValorUnitario" class="control-label"></label>
-                <input asp-for="ValorUnitario" class="form-control" />
-                <span asp-validation-for="ValorUnitario" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="DataVenda" class="control-label"></label>
                 <input asp-for="DataVenda" class="form-control" />
                 <span asp-validation-for="DataVenda" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="ValorUnitario" class="control-label"></label>
+                <input asp-for="ValorUnitario" class="form-control" readonly />
+                <span asp-validation-for="ValorUnitario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="ValorTotal" class="control-label"></label>
-                <input asp-for="ValorTotal" class="form-control" />
+                <input asp-for="ValorTotal" class="form-control" readonly step="0.01" />
                 <span asp-validation-for="ValorTotal" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -55,5 +58,62 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            let formSubmitted = false;
+
+            $('form').on('submit', function () {
+                formSubmitted = true;
+            });
+
+            $('#ProdutoId').change(function () {
+                if (!formSubmitted) {
+                    var produtoId = $(this).val();
+                    if (produtoId) {
+                        $.ajax({
+                            url: '@Url.Action("GetProdutoValorUnitario", "Vendas")',
+                            data: { id: produtoId },
+                            success: function (result) {
+                                $('#ValorUnitario').val(result.valorUnitario);
+                                updateValorTotal();
+                            }
+                        });
+                    }
+                }
+            });
+
+            $('#Quantidade').change(function () {
+                if (!formSubmitted) {
+                    updateValorTotal();
+                }
+            });
+
+            function updateValorTotal() {
+                var quantidade = parseFloat($('#Quantidade').val().replace(',', '.'));
+                var valorUnitario = parseFloat($('#ValorUnitario').val().replace(',', '.'));
+
+                if (!isNaN(quantidade) && !isNaN(valorUnitario)) {
+                    var valorTotal = quantidade * valorUnitario;
+                    $('#ValorTotal').val(valorTotal.toFixed(2));
+                }
+            }
+        });
+
+        $.validator.methods.range = function (value, element, param) {
+            var globalizedValue = value.replace(",", ".");
+            return this.optional(element) || (globalizedValue >= param[0] && globalizedValue <= param[1]);
+        }
+
+        $.validator.methods.number = function (value, element) {
+            return this.optional(element) || /^-?(?:\d+|\d{1,3}(?:[\s\.,]\d{3})+)(?:[\.,]\d+)?$/.test(value);
+        }
+
+        $.validator.methods.date = function (value, element) {
+            var date = value.split("/");
+            return this.optional(element) || !/Invalid|NaN/.test(new Date(date[2], date[1] - 1, date[0]).toString());
+        }
+    </script>
 }
